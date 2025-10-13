@@ -93,11 +93,13 @@ func (l *ClassLogger) Log(msg string, durationMs ...int) {
 		fileLogger.Printf("[%s][%s] %s", label, funcName, msg)
 	}
 
+	displayMsg := shortenForDisplay(msg)
+
 	if totalDuration > 0 {
 		interval := 1 * time.Second
 
 		for remaining := totalDuration; remaining > 0; remaining -= interval {
-			ui.UpdateStatus(*session, msg, remaining)
+			ui.UpdateStatus(*session, displayMsg, remaining)
 
 			sleepTime := interval
 			if remaining < interval {
@@ -107,7 +109,7 @@ func (l *ClassLogger) Log(msg string, durationMs ...int) {
 		}
 	}
 
-	ui.UpdateStatus(*session, msg, 0)
+	ui.UpdateStatus(*session, displayMsg, 0)
 }
 
 func (l *ClassLogger) JustLog(msg string) {
@@ -145,4 +147,13 @@ func callerFunc(skip int) string {
 	}
 	parts := strings.Split(fn.Name(), ".")
 	return parts[len(parts)-1]
+}
+
+func shortenForDisplay(msg string) string {
+	const maxLen = 140
+	runes := []rune(msg)
+	if len(runes) <= maxLen {
+		return msg
+	}
+	return string(runes[:maxLen-1]) + "…"
 }

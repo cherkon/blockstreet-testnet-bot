@@ -105,6 +105,8 @@ go run cmd/bot/main.go
 | `CAPSOLVER_API_KEY` | API key for CapSolver. Leave blank to disable. |
 | `DAILY_MIN_INVITE` | Minimum number of invites the bot should attempt per day. |
 | `DAILY_MAX_INVITE` | Maximum number of invites the bot should attempt per day. |
+| `DELAY_MIN_INVITE_MINUTES` | Minimum waiting time (minutes) between invite attempts (default 1 if unset). |
+| `DELAY_MAX_INVITE_MINUTES` | Maximum waiting time (minutes) between invite attempts (default 5 if unset). |
 
 > ⚠️ Provide at least one solver key (CapSolver or 2Captcha). Set both if you want automatic fallback.
 

@@ -18,6 +18,8 @@ type Config struct {
 	CapSolverAPIKey  string
 	InviteMin        int
 	InviteMax        int
+	InviteDelayMin   int
+	InviteDelayMax   int
 }
 
 type Account struct {
@@ -36,12 +38,33 @@ func Load() Config {
 		inviteMax = inviteMin
 	}
 
+	delayMinRaw := strings.TrimSpace(os.Getenv("DELAY_MIN_INVITE_MINUTES"))
+	delayMaxRaw := strings.TrimSpace(os.Getenv("DELAY_MAX_INVITE_MINUTES"))
+	delaySpecified := delayMinRaw != "" || delayMaxRaw != ""
+
+	delayMin := parseIntWithDefault(delayMinRaw, 0)
+	delayMax := parseIntWithDefault(delayMaxRaw, delayMin)
+
+	if delayMin < 0 {
+		delayMin = 0
+	}
+	if delayMax < delayMin {
+		delayMax = delayMin
+	}
+
+	if !delaySpecified {
+		delayMin = 1
+		delayMax = 5
+	}
+
 	return Config{
 		AccountsPath:     "configs/accounts.json",
 		TwoCaptchaAPIKey: strings.TrimSpace(os.Getenv("TWO_CAPTCHA_API_KEY")),
 		CapSolverAPIKey:  strings.TrimSpace(os.Getenv("CAPSOLVER_API_KEY")),
 		InviteMin:        inviteMin,
 		InviteMax:        inviteMax,
+		InviteDelayMin:   delayMin,
+		InviteDelayMax:   delayMax,
 	}
 }
 

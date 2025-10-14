@@ -318,6 +318,12 @@ func (w *BlockStreetWorker) Operate() error {
 			w.session.InviteCompleted = completed
 			w.session.InviteTarget = target
 		}
+		if i < invitesNeeded-1 {
+			if delay := randomInviteDelay(w.cfg.InviteDelayMin, w.cfg.InviteDelayMax); delay > 0 {
+				w.log.Log(fmt.Sprintf("Waiting %s before next invite", delay), int(delay/time.Millisecond))
+				time.Sleep(delay)
+			}
+		}
 	}
 
 	w.setInviteStatus(statusDone)
@@ -673,6 +679,28 @@ func (w *BlockStreetWorker) generateInviteTarget(min, max int) int {
 		return min
 	}
 	return min + int(val.Int64())
+}
+
+func randomInviteDelay(minMinutes, maxMinutes int) time.Duration {
+	if minMinutes <= 0 && maxMinutes <= 0 {
+		return 0
+	}
+	if minMinutes < 0 {
+		minMinutes = 0
+	}
+	if maxMinutes < minMinutes {
+		maxMinutes = minMinutes
+	}
+	if minMinutes == maxMinutes {
+		return time.Duration(minMinutes) * time.Minute
+	}
+	delta := maxMinutes - minMinutes + 1
+	val, err := rand.Int(rand.Reader, big.NewInt(int64(delta)))
+	if err != nil {
+		return time.Duration(minMinutes) * time.Minute
+	}
+	totalMinutes := minMinutes + int(val.Int64())
+	return time.Duration(totalMinutes) * time.Minute
 }
 
 func (w *BlockStreetWorker) handleEarningsAndShare(day time.Time, shareAlreadyDone bool) error {

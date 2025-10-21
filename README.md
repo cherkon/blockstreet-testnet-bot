@@ -144,7 +144,7 @@ Stop the bot with `CTRL+C`. It automatically respects the invite target and dail
 
 ## Build from Source
 
-To build platform-specific binaries:
+To build platform-specific binaries
 
 ```bash
 mkdir -p release
